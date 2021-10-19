@@ -23,7 +23,7 @@
 #include<math.h>
 #include<vector>
 
-ros::Publisher pubImage, pubDepth, pubPCD;
+ros::Publisher pubImage, pubDepth;
 
 typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image,sensor_msgs::PointCloud2> sync_policy_classification;
 
@@ -97,10 +97,12 @@ void callback(const sensor_msgs::ImageConstPtr& msg,const sensor_msgs::PointClou
 	static int count = 1;
 	ROS_INFO("Received count=%d \n", count++);
 
-	cv::Mat color_image_raw = cv_bridge::toCvShare(msg, "bgr8")->image;   // sensor_msgs::Image  --->  cv::Mat
+	// sensor_msgs::Image  --->  cv::Mat
+	cv::Mat color_image_raw = cv_bridge::toCvShare(msg, "bgr8")->image; 
 
+	// sensor_msgs::PointCloud2 ---> pcl::PointCloud<T>
 	pcl::PointCloud<pcl::PointXYZ> cloud;
-	pcl::fromROSMsg(*cloud_msg, cloud);    // sensor_msgs::PointCloud2 ---> pcl::PointCloud<T>
+	pcl::fromROSMsg(*cloud_msg, cloud);    
 
 
 	//color   depth  内外参
@@ -142,7 +144,6 @@ int main(int argc, char** argv)
 
 	pubImage = nh.advertise<sensor_msgs::Image>("/image_color_convert", 1000, true);
 	pubDepth = nh.advertise<sensor_msgs::Image>("/image_depth_convert", 1000, true);
-	pubPCD = nh.advertise<sensor_msgs::PointCloud2>("/pcd_raw", 1000, true);
 
 	message_filters::Subscriber<sensor_msgs::Image> info_sub(nh, "/Preposition_NavigationCamera_left", 1000);
 	message_filters::Subscriber<sensor_msgs::PointCloud2> pose_sub(nh, "/up_tof",1000);
