@@ -1,5 +1,14 @@
 # color_tof2RGBD
 
+```bash
+cd ~/rosworkspace/src/
+git clone git@github.com:oulton/color_tof2RGBD.git
+cd ..
+catkin_make
+
+source devel/setup.bash
+roslaunch imagepub imagepub.launch
+```
 ##  input:
 
     topic_img      topic_tof_pcd
