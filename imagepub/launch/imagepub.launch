@@ -1,0 +1,9 @@
+<launch>
+    <node pkg="imagepub" name="imagepub_node" type="imagepub_node" output="screen"/>
+
+    <arg name="rviz" default="true" />
+    <group if="$(arg rviz)">
+        <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d $(find imagepub)/rviz_cfg/imagepub.rviz" />
+    </group>
+
+</launch>
