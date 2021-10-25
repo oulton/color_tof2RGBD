@@ -107,8 +107,8 @@ void callback(const sensor_msgs::ImageConstPtr& msg,const sensor_msgs::PointClou
 
 	//color   depth  内外参
 	Eigen::Matrix3f intrinsic_depth;
-    intrinsic_depth  <<  508.1586608886719,0,322.898193359375,
-                         0,508.1586608886719,250.3104248046875,
+    intrinsic_depth  <<  509.1124267578125,0,318.6107177734375,
+                         0,509.1124267578125,236.57981872558594,
                          0,0,1;
 	Eigen::Matrix3f intrinsic_color;
     intrinsic_color  <<  2187.838429, 0, 1050.0,
