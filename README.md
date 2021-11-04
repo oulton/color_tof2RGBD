@@ -9,6 +9,9 @@ catkin_make
 source devel/setup.bash
 roslaunch imagepub imagepub.launch
 ```
+
+modify your topics in launch file
+
 ##  input:
 
     topic_img      topic_tof_pcd
