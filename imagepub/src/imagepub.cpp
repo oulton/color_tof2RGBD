@@ -33,21 +33,32 @@ cv::Mat CreatDepthFromCloud( int width, int height,  Eigen::Matrix3f intrinsic, 
     pcl::removeNaNFromPointCloud( cloud, cloud, indices);  //remove无效点
 
     cv::Mat depth=cv::Mat::zeros( height, width, CV_16UC1 );
-    for(int i=0;i<cloud.points.size(); i++ ){
 
-        Eigen::Vector3f v( cloud.points[i].x,  cloud.points[i].y , cloud.points[i].z);
-        // std::cout<<v<<std::endl;
-        if(v[0]==0&&v[1]==0&&v[2]==0)
-            continue;;
-        Eigen::Vector3f uv=intrinsic*v;
-        int u_=round( uv[0]/uv[2] );
-        int v_=round( uv[1]/uv[2] );
-        int d= round( uv[2]*1000 );
-        if(u_>=width||u_<0||v_>=height||v_<0)
-            continue;
-        depth.ptr<ushort>(v_)[u_]=d;
+    int points_count = 0;
+    for (int i = 0; i < height; i++)
+    {
+        for (int j  = 0; j < width; j++)
+        {
+            int d = round(cloud.points[points_count++].z * 1000);
+            depth.at<ushort>(i,j) = d;
+        }
     }
+
     return depth;
+    
+    // for(int i=0;i<cloud.points.size(); i++ ){
+    //     Eigen::Vector3f v( cloud.points[i].x,  cloud.points[i].y , cloud.points[i].z);
+    //     if(v[0]==0&&v[1]==0&&v[2]==0)
+    //         continue;
+    //     Eigen::Vector3f uv=intrinsic*v;
+    //     int u_=round( uv[0]/uv[2] );
+    //     int v_=round( uv[1]/uv[2] );
+    //     int d= round( uv[2]*1000 );
+    //     if(u_>=width||u_<0||v_>=height||v_<0)
+    //         continue;
+    //     depth.ptr<ushort>(v_)[u_]=d;
+    // }
+    // return depth;
 }
 
 Eigen::Vector3f cam2point( int m, int n, Eigen::Matrix3f  K_x_ )
@@ -107,12 +118,12 @@ void callback(const sensor_msgs::ImageConstPtr& msg,const sensor_msgs::PointClou
 
 	//color   depth  内外参
 	Eigen::Matrix3f intrinsic_depth;
-    intrinsic_depth  <<  509.1124267578125,0,318.6107177734375,
-                         0,509.1124267578125,236.57981872558594,
+    intrinsic_depth  <<  507.8939724646329,0,365.0001498679966,
+                         0,490.4605167415518,230.91658138264464,
                          0,0,1;
 	Eigen::Matrix3f intrinsic_color;
-    intrinsic_color  <<  2187.838429, 0, 1050.0,
-						 0, 2187.838429, 1005.266588,
+    intrinsic_color  <<  2136.4240830606855, 0, 1081.5132654639765,
+						 0, 2140.234862042462, 1024.5919569660448,
 						 0, 0, 1;
 	Eigen::Matrix4f T_color_depth;  //此处是color2depth     下面代码传参地方需要depth2color   所以要转置一下
     T_color_depth  <<    0.9980969724486808, -0.0019868338822574493, -0.061631859292932197, -0.37329782506326975,
@@ -141,6 +152,14 @@ int main(int argc, char** argv)
 {
 	ros::init(argc, argv, "image_convert");
 	ros::NodeHandle nh;
+
+    std::string Publish_Color,Publish_Depth;
+    std::string Subscriber_Color,Subscriber_PCD;
+    
+    nh.param<std::string>("Publish_Color", Publish_Color, "/image_color_convert");
+    nh.param<std::string>("Publish_Depth", Publish_Depth, "/image_depth_convert");
+    nh.param<std::string>("Subscriber_Color", Subscriber_Color, "/Preposition_NavigationCamera_left");
+    nh.param<std::string>("Subscriber_PCD", Subscriber_PCD, "/up_tof");
 
 	pubImage = nh.advertise<sensor_msgs::Image>("/image_color_convert", 1000, true);
 	pubDepth = nh.advertise<sensor_msgs::Image>("/image_depth_convert", 1000, true);

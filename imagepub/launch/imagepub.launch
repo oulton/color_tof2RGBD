@@ -1,7 +1,13 @@
 <launch>
-    <node pkg="imagepub" name="imagepub_node" type="imagepub_node" output="screen"/>
+    
+    <node pkg="imagepub" name="imagepub_node" type="imagepub_node" output="screen">
+        <param name = "Subscriber_Color" type = "string" value = "/Preposition_NavigationCamera_left" />
+        <param name = "Subscriber_PCD" type = "string" value = "/up_tof" />
+        <param name = "Publish_Color" type = "string" value = "/image_color_convert" />
+        <param name = "Publish_Depth" type = "string" value = "/image_depth_convert" />
+    </node>
 
-    <arg name="rviz" default="true" />
+    <arg name="rviz" default="false" />
     <group if="$(arg rviz)">
         <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d $(find imagepub)/rviz_cfg/imagepub.rviz" />
     </group>
